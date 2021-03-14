@@ -1,2 +1,0 @@
-#!/bin/bash
-find . -type f -not -name '*.js' -delete
