@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+# Configures a new ubuntu machine to respect the follwing requirements:
+# installs nginx.
+# nginx should listen on port 80
+# When querying Nginx at its root / with a GET request (requesting a page) using curl,
+# it must return a page that contains the string Holberton School
+# systemctl cannot be used to restart nginx.
+
+apt-get -y update
+apt-get -y upgrade
+apt-get -y install nginx
+sed -i "21s/^listen .*/listen 80" /etc/nginx/sites-enabled/default
+ufw allow 'Nginx HTTP'
+echo "Holberton School" >> /var/www/html/index.html
+service nginx start

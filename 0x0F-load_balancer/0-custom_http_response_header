@@ -1,0 +1,25 @@
+#!/usr/bin/env bash
+# installs nginx in an ubuntu machine with the following configurations.
+# Listen on port 80.
+# Returns a page containing the string "Holberton School" when a get request is sent at the root.
+# The url /redirect_me returns a "301 Moved Permanently"
+# Has a custom 404 page containing the string "Ceci n'est pas une page"
+# Has a custom HTTP header called X-Served-By whose value equals the hostname of the machine
+# the server is running on.
+
+apt-get -y update
+apt-get -y upgrade
+apt-get -y install nginx
+
+sed -i "21s/^listen .*/listen 80" /etc/nginx/sites-enabled/default
+ufw allow 'Nginx HTTP'
+echo "Holberton School" >> /var/www/html/index.html
+file_path=/etc/nginx/sites-enabled/default
+redirect="\	rewrite ^/redirect_me https://www.youtube.com/watch?v=QH2-TGUlwu4/$1";
+sed -i " /server_name _;/a ${redirect} permanent;" $file_path
+echo "Ceci n'est pas une page" > /usr/share/nginx/html/custom_404.html
+err="\        error_page\ 404 /custom_404.html;\n\        location\ = \ /custom_404.html\  {\n\t\troot\ /usr/share/nginx/html;\n\t\tinternal;\n\t}"
+sed -i "/server_name _;/a ${err}" $file_path
+custom_http_h="\    add_header X-Served-By $HOSTNAME;"
+sed -i "/server_name _;/a ${custom_http_h}" $file_path
+service nginx restart
